@@ -1,0 +1,2 @@
+# -l-ments_propre_matrice_openmp
+CALCUL DES  ́EL ́EMENTS PROPRES D’UNE MATRICE SYM ́ETRIQUE AVEC OPENMP
