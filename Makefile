@@ -1,25 +1,13 @@
-SLEPSC_DIR=lib/slepsc
-PEPSC_DIR=lib/pepsc
-include=-I/usr/include/
-libs=-L/usr/lib/x86_64-linux-gnu/
-flags=-lgsl -lgslcblas -lm
 cc=g++
 
-sequentiel: sequentiel.o inverter.o input_andCo.o
-			$(cc) -o $@ $(libs) $^ $(flags) 
+PETSC_DIR=/home/ahenches/Documents/isty/projets/elements_propres_matrice_openmp/lib/petsc
 
-sequentiel.o: sequentiel.cpp src/inverter.c
-			$(cc) $(include) -c $^
+INCLUDE=-I$(PETSC_DIR)/include -I$(PETSC_DIR)/$(PETSC_ARCH)/include 
 
-inverter.o: src/inverter.c
-			$(cc) -o $@ $(include) -c $^
+include ${PETSC_DIR}/lib/petsc/conf/variables
+include ${PETSC_DIR}/lib/petsc/conf/rules
+all: simple 
 
-input_andCo.o: src/input_creation_and_iterative_methods.c
-			$(cc) -o $@ $(include) -c $^
-
-# test: test.o
-# 			$(cc) -o $@ $(libs) test.o $(flags)
-
-# test.o: test.cpp
-# 			$(cc) -o $@ $(include) -c $^
+simple: simple.cpp
+	g++ $(INCLUDE) simple.cpp -o simple
 
