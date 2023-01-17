@@ -1,13 +1,25 @@
+
+gsl_include=-I/usr/include/
+gsl_lib=-L/usr/lib/x86_64-linux-gnu/
+gsl_flags=-lgsl -lgslcblas -lm
 cc=g++
 
-PETSC_DIR=/home/ahenches/Documents/isty/projets/elements_propres_matrice_openmp/lib/petsc
+sequentiel: sequentiel.o inverter.o input_andCo.o
+			$(cc) -o $@ $(gsl_lib) $^ $(gsl_flags) 
 
-INCLUDE=-I$(PETSC_DIR)/include -I$(PETSC_DIR)/$(PETSC_ARCH)/include 
+sequentiel.o: sequentiel.cpp src/inverter.c
+			$(cc) $(gsl_include) -c $^
 
-include ${PETSC_DIR}/lib/petsc/conf/variables
-include ${PETSC_DIR}/lib/petsc/conf/rules
-all: simple 
+inverter.o: src/inverter.c
+			$(cc) -o $@ $(gsl_include) -c $^
 
-simple: simple.cpp
-	g++ $(INCLUDE) simple.cpp -o simple
+input_andCo.o: src/input_creation_and_iterative_methods.c
+			$(cc) -o $@ $(gsl_include) -c $^
+
+
+test: test.o
+			$(cc) -o $@ $(gsl_lib) test.o $(gsl_flags)
+
+test.o: test.cpp
+			$(cc) -o $@ $(gsl_include) -c $^
 

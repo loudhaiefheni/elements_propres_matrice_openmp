@@ -1,1 +1,0 @@
-./configure --with-mpi=0 --with-fc=0 --download-f2cblaslapack
