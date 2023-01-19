@@ -4,6 +4,32 @@
 
 
 
+void test_SVD(){
+	// https://en.wikipedia.org/wiki/Singular_value_decomposition
+	// https://www.gnu.org/software/gsl/doc/html/linalg.html#singular-value-decomposition
+	size_t n, m;
+	// M >= N
+	n = 3;
+	m = n;
+
+	gsl_matrix *A = gsl_matrix_alloc(m, n);
+	gsl_matrix *V = gsl_matrix_alloc(m, n);
+	gsl_vector *S = gsl_vector_alloc(n);
+	gsl_vector *work = gsl_vector_alloc(n);
+	gsl_matrix_set(A, 0, 0, 1);
+	gsl_matrix_set(A, 0, 1, -5);
+	gsl_matrix_set(A, 0, 2, 1);
+	gsl_matrix_set(A, 1, 0, 0);
+	gsl_matrix_set(A, 1, 1, 2);
+	gsl_matrix_set(A, 1, 2, -1);
+	gsl_matrix_set(A, 2, 0, 0);
+	gsl_matrix_set(A, 2, 1, 0);
+	gsl_matrix_set(A, 2, 2, 3);
+	print_matrix_contents(A);
+	gsl_linalg_SV_decomp(A, V, S, work);
+
+	print_vector_contents(S);
+}
 
 
 int main(){
@@ -118,6 +144,7 @@ int main(){
 	// gsl_matrix_free(b_m);
 	// gsl_matrix_free(f_m);
 	// //Calculer les valeurs et vecteurs propres de Fm: (λi, ui) pour i = 1, . . . , m.
+	test_SVD();
 	 }
 
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
@@ -125,3 +152,5 @@ int main(){
 
 	return 0;
 }
+
+

@@ -32,14 +32,28 @@ double scalar_product(gsl_vector *vector1, gsl_vector *vector2)
 	return ret_value;
 }
 
-void print_vector_contents(gsl_vector *vector, int n_ligne)
+void print_vector_contents(gsl_vector *vector)
 {
-	int i, j;
+	size_t i;
 	double element;
 
-	for (i = 0; i < n_ligne; ++i) {
+	for (i = 0; i < vector->size; ++i) {
 		element = gsl_vector_get(vector, i);
-		printf("%f ", element);
+		printf("%lf ", element);
+	}
+	printf("\n");
+}
+void print_matrix_contents(gsl_matrix *matrix)
+{
+	size_t i, j;
+	double element;
+
+	for (i = 0; i < matrix->size1; i++) {
+		for (j = 0; j < matrix->size2; j++) {
+			element = gsl_matrix_get(matrix, i, j);
+			printf("%lf ", element);
+		}
+		printf("\n");
 	}
 	printf("\n");
 }
