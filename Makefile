@@ -1,6 +1,5 @@
-
-gsl_include=-I/usr/include/
-gsl_lib=-L/usr/lib/x86_64-linux-gnu/
+#gsl_include=-I/usr/include/
+#gsl_lib=-L/usr/lib/x86_64-linux-gnu/
 gsl_flags=-lgsl -lgslcblas -lm
 cc=gcc
 
@@ -18,7 +17,8 @@ input_andCo.o: src/input_creation_and_iterative_methods.c
 
 
 clean: *.o
-	rm *.o
+	rm *.o 
+	rm sequentiel
 
 test: test.o
 			$(cc) -o $@ $(gsl_lib) test.o $(gsl_flags)
