@@ -3,19 +3,15 @@
 #include "sequentiel.h"
 
 
-
 void test_SVD(){
 	// https://en.wikipedia.org/wiki/Singular_value_decomposition
-	// https://www.gnu.org/software/gsl/doc/html/linalg.html#singular-value-decomposition
-	size_t n, m;
-	// M >= N
-	n = 3;
-	m = n;
+	// https://www.gnu.org/software/gsl/doc/html/eigen.html#c.gsl_eigen_symm_workspace
+	size_t n = 3;
+	gsl_eigen_symm_workspace *my_workspace;
+	my_workspace = gsl_eigen_symm_alloc(n);
 
-	gsl_matrix *A = gsl_matrix_alloc(m, n);
-	gsl_matrix *V = gsl_matrix_alloc(m, n);
+	gsl_matrix *A = gsl_matrix_alloc(n, n);
 	gsl_vector *S = gsl_vector_alloc(n);
-	gsl_vector *work = gsl_vector_alloc(n);
 	gsl_matrix_set(A, 0, 0, 1);
 	gsl_matrix_set(A, 0, 1, -5);
 	gsl_matrix_set(A, 0, 2, 1);
@@ -26,7 +22,8 @@ void test_SVD(){
 	gsl_matrix_set(A, 2, 1, 0);
 	gsl_matrix_set(A, 2, 2, 3);
 	print_matrix_contents(A);
-	gsl_linalg_SV_decomp(A, V, S, work);
+	gsl_eigen_symm(A, S, my_workspace);
+	gsl_eigen_symm_free(my_workspace);
 
 	print_vector_contents(S);
 }
