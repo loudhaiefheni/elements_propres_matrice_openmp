@@ -32,6 +32,29 @@ double scalar_product(gsl_vector *vector1, gsl_vector *vector2)
 	return ret_value;
 }
 
+gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector)
+{
+	int size, row, colomn;
+	double result;
+	size = vector->size;
+	gsl_vector *vector_result = gsl_vector_alloc(size);
+
+	assert(matrix->size1 == size);
+	assert(matrix->size2 == size);
+
+	for(row = 0; row <size; row++)//A paralleliser
+	{
+		result = 0;
+		for(colomn = 0; colomn < size ; colomn++)
+		{
+			result += (double)gsl_matrix_get(matrix, row, colomn) * (double)gsl_vector_get(vector,colomn);
+		}
+		gsl_vector_set(vector_result,row, result);
+	}
+
+	return vector_result;
+}
+
 void print_vector_contents(gsl_vector *vector)
 {
 	size_t i;
