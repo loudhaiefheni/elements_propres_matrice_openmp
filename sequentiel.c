@@ -57,7 +57,7 @@ int main(){
 	print_vector_contents(x, size_x_vector);
 
 	*/
-
+/*
 	size_x_vector = 4;
 
 	gsl_vector *x0 = gsl_vector_alloc(size_x_vector);
@@ -76,12 +76,35 @@ int main(){
 
 
 	printf("PRODUIT SCALAIRE : %lf\n", scalar_product(x0, x1));
+*/
+
+	gsl_matrix *A = gsl_matrix_alloc(3,3);
+	gsl_matrix_set(A, 0, 0, 5);
+	gsl_matrix_set(A, 0, 1, -8);
+	gsl_matrix_set(A, 0, 2, 3);
+	gsl_matrix_set(A, 1, 0, -62);
+	gsl_matrix_set(A, 1, 1, 45);
+	gsl_matrix_set(A, 1, 2, -10);
+	gsl_matrix_set(A, 2, 0, 7);
+	gsl_matrix_set(A, 2, 1, 1);
+	gsl_matrix_set(A, 2, 2, 37);
+
+	gsl_vector *x3 = gsl_vector_alloc(2);
+
+	gsl_vector_set(x3, 0, (double)-5);
+	gsl_vector_set(x3, 1, (double)3);
+
+	
+	print_matrix_contents(A);
+	print_vector_contents(x3);
+	print_vector_contents(matrix_vector_product(A,x3));
+
 
 	//1. Calculer C2k−1 = (yk, yk−1), C2k = (yk, yk) o`u yk = Ayk−1, for k = 1, m.
 	//Constituer les matrices Bm−1, Bm et Vm.
 
 	//2. Calculer Em = B−1 m−1.
-	 { 
+	// { 
 	// // On utilise le code de @author bjd2385 trouvé à https://gist.github.com/bjd2385/7f4685e703f7437e513608f41c65bbd7
 	// // j'inverse une matrice 2x2 pour tester voir "matrice 2x2 inversion exemple.png" dans testing
 	// srand(time(NULL));
@@ -141,13 +164,104 @@ int main(){
 	// gsl_matrix_free(b_m);
 	// gsl_matrix_free(f_m);
 	// //Calculer les valeurs et vecteurs propres de Fm: (λi, ui) pour i = 1, . . . , m.
-	test_SVD();
-	 }
+	//test_SVD();
+	 //}
 
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////// Initialisation ///////////////////////////////////////////
+
+//// Lecture des fichiers contenant les matrices et créations des matrices correspondantes
+
+
+
+//// Initialisation des constantes, des vecteurs et des matrices
+
+	int n = 10; //taile de l espace de base (taille de la matrice d entrée)
+	int m = 5; //taille du sous espace 
+	long double epsilon; //precision des resultats
+	
+	//vecteur d entree sa normalisation donne le vecteur y_0
+	gsl_vector *x = gsl_vector_alloc(m);
+
+	gsl_vector *y_k = gsl_vector_alloc(n);
+	gsl_vector *y_k_moins_un = gsl_vector_alloc(n);
+
+	// tableau de vecteurs contenant les vecteur yk  (yk = A*y_(k-1) = A^(k)*y_0 )
+	gsl_vector v_m [m];
+	// tableau de vecteurs contenant les resultats des produits scalaires sur les vecteurs (y_k et y_k-1) ou (y_k et y_k)
+	gsl_vector c[2*m+1];
+
+	//matrices contruites a partir du tableau c 
+	gsl_matrix *b_m = gsl_matrix_alloc(m,m);
+	gsl_matrix *b_m_moins_un = gsl_matrix_alloc(m,m);
+
+	//produit des matrices b_m et e_m
+	gsl_matrix *f_m = gsl_matrix_alloc(m,m);
+	//inverse de la matrice b_m-1
+	gsl_matrix *e_m = gsl_matrix_alloc(m,m);
+
+
+	
+
+
+//// Etape 1 
+//1. Calculer C2k−1 = (yk, yk−1), C2k = (yk, yk) où yk = Ayk−1, for k = 1, m.
+
+	normalize_vector(x);
+
+	y_k_moins_un = x;
+
+	c[0] = scalar_product(y_k_moins_un,y_k_moins_un);
+
+	for(int k = 1 ; k <= m ; k++)
+	{
+		y_k = matrix_vector_product(a,y_k_moins_un);
+		c[2*k-1] = scalar_product(y_k, y_k_moins_un);
+		c[2*k] = scalar_product(y_k,y_k);
+		y_k_moins_un = y_k;
+	}
+
+	//Constitution des matrices b_m-1, b_m et v_m
+
+	for(int ligne = 0 ; ligne < m ; ligne++)
+	{
+		for(int colonne = 0; colonne < m; colonne++)
+		{
+			gsl_matrix_set(b_m_moins_un, ligne, colonne, c[colonne + ligne]);
+			gsl_matrix_set(b_m,ligne , colonne, c[colonne + ligne + 1]);
+		}
+	}
+
+
+//2. Calculer Em = B−1 m−1.
+
+
+//3. Calculer qi = Vm × ui pour i = 1, . . . m
+
+
+//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	return 0;
 }
-
-
