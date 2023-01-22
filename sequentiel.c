@@ -217,17 +217,18 @@ int main(){
 
 	y_k_moins_un = x;
 
-	c[0] = scalar_product(y_k_moins_un,y_k_moins_un);
+	c[0] = scalar_product(y_k_moins_un, y_k_moins_un);
 
 	for(int k = 1 ; k <= m ; k++)
 	{
-		y_k = matrix_vector_product(a,y_k_moins_un);
+		v_m[k-1] = y_k_moins_un;
+		y_k = matrix_vector_product(a, y_k_moins_un);
 		c[2*k-1] = scalar_product(y_k, y_k_moins_un);
-		c[2*k] = scalar_product(y_k,y_k);
+		c[2*k] = scalar_product(y_k, y_k);
 		y_k_moins_un = y_k;
 	}
 
-	//Constitution des matrices b_m-1, b_m et v_m
+	//Constitution des matrices b_m-1, b_m 
 
 	for(int ligne = 0 ; ligne < m ; ligne++)
 	{
@@ -238,8 +239,21 @@ int main(){
 		}
 	}
 
+////Etape 2
+//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 
-//2. Calculer Em = B−1 m−1.
+	e_m = invert_a_matrix(b_m_moins_un, m);
+	gsl_blas_dsymm(CblasLeft, CblasUpper, 1, e_m, b_m, 0, f_m);
+
+	// Calcul valeurs et vecteurs propres de f_m
+
+	gsl_eigen_symm_workspace *my_workspace;
+	my_workspace = gsl_eigen_symm_alloc(n);
+
+	gsl_eigen_symm(A, S, my_workspace);
+	gsl_eigen_symm_free(my_workspace);
+
+
 
 
 //3. Calculer qi = Vm × ui pour i = 1, . . . m
