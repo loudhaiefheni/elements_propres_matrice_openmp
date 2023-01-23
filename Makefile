@@ -3,10 +3,10 @@
 gsl_flags=-lgsl -lgslcblas -lm
 cc=gcc
 
-sequentiel: sequentiel.o inverter.o input_andCo.o
+programme: main.o inverter.o input_andCo.o
 			$(cc) -o $@ $(gsl_lib) $^ $(gsl_flags) 
 
-sequentiel.o: sequentiel.c src/inverter.c
+main.o: main.c src/inverter.c
 			$(cc) $(gsl_include) -c $^
 
 inverter.o: src/inverter.c
@@ -18,7 +18,7 @@ input_andCo.o: src/input_creation_and_iterative_methods.c
 
 clean: *.o
 	rm *.o 
-	rm sequentiel
+	rm programme
 
 test: test.o
 			$(cc) -o $@ $(gsl_lib) test.o $(gsl_flags)
