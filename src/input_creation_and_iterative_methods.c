@@ -1,17 +1,17 @@
 #include "input_creation_and_iterative_methods.h"
 
 
-int normalize_vector(gsl_vector *vector_to_normalize)
+double normalize_vector(gsl_vector *vector_to_normalize)
 {
 	// calcul de la norme
-	double xi, sum = 0;
+	long double xi, sum = 0;
 	for (int i = 0; i < vector_to_normalize->size; i++)
 	{
 		xi = gsl_vector_get(vector_to_normalize, i);
 		sum += xi*xi;
 	}
 	printf("sum : %f\n", sum);
-	double norm = sqrt(sum);
+	long double norm = sqrt(sum);
 	printf("norm : %f\n", norm);
 	for (int i = 0; i < vector_to_normalize->size; i++)
 	{
@@ -20,7 +20,7 @@ int normalize_vector(gsl_vector *vector_to_normalize)
 		gsl_vector_set(vector_to_normalize, i, xi);
 	}
 
-	return 0;
+	return norm;
 }
 
 double scalar_product(gsl_vector *vector1, gsl_vector *vector2)
