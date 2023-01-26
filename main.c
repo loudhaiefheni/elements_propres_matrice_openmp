@@ -31,10 +31,11 @@
 */
 int main(){
 	
-	int size_x_vector;
+/*
+//	int size_x_vector;
 
 	// NORMALISATION
-	/*
+	
 	size_x_vector = 10;
 
 	gsl_vector *x = gsl_vector_alloc(size_x_vector);
@@ -56,8 +57,7 @@ int main(){
 
 	print_vector_contents(x, size_x_vector);
 
-	*/
-/*
+
 	size_x_vector = 4;
 
 	gsl_vector *x0 = gsl_vector_alloc(size_x_vector);
@@ -76,7 +76,7 @@ int main(){
 
 
 	printf("PRODUIT SCALAIRE : %lf\n", scalar_product(x0, x1));
-*/
+
 
 	gsl_matrix *A = gsl_matrix_alloc(3,3);
 	gsl_matrix_set(A, 0, 0, 5);
@@ -168,7 +168,7 @@ int main(){
 
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
-
+*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,22 @@ int main(){
 
 //// Lecture des fichiers contenant les matrices et créations des matrices correspondantes
 
+	gsl_matrix *A = gsl_matrix_alloc(10,10);
+	for(int r =0; r< 10; r++)
+	{
+		for(int c=0; c<10; c++)
+		{
+			gsl_matrix_set(A, r, c, (double)r+c);
+		}
+	}
 
+
+	gsl_vector *x = gsl_vector_alloc(5);
+
+	gsl_vector_set_zero(x);
+	gsl_vector_set(x, 0, (double)1);
+
+	algo_PRR(A,x);
 
 	return 0;
 }

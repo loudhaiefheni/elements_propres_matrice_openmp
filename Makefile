@@ -3,11 +3,14 @@
 gsl_flags=-lgsl -lgslcblas -lm
 cc=gcc
 
-programme: main.o inverter.o input_andCo.o
+programme: main.o algo.o inverter.o input_andCo.o
 			$(cc) -o $@ $(gsl_lib) $^ $(gsl_flags) 
 
 main.o: main.c src/inverter.c
 			$(cc) $(gsl_include) -c $^
+
+algo.o: src/algo_prr.c
+			$(cc) -o $@ $(gsl_include) -c $^
 
 inverter.o: src/inverter.c
 			$(cc) -o $@ $(gsl_include) -c $^

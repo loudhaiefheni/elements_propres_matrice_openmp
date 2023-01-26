@@ -44,6 +44,7 @@ gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector)
 	double result;
 	size = vector->size;
 	gsl_vector *vector_result = gsl_vector_alloc(size);
+	printf("taille vecteur : %d\ntaille matrice : %d\n", size, matrix->size1);
 
 	assert(matrix->size1 == size);
 	assert(matrix->size2 == size);
