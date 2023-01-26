@@ -8,7 +8,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#define ITERATION_MAX 1000
+#define ITERATION_MAX 100
 
 
-void algo_PRR(gsl_matrix *a , gsl_vector *x);
+void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m);

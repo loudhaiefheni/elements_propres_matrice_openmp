@@ -3,30 +3,27 @@
 #include "algo_prr.h"
 
 
-void algo_PRR(gsl_matrix *a , gsl_vector *x)
+void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 {
 //// Initialisation des constantes, des vecteurs et des matrices
-	
-	int n = 10; //taile de l espace de base (taille de la matrice d entrée)
-	int m = 5; //taille du sous espace 
+
 	int est_precis; //booleen pour la precision de l iteration
 	int iteration;
 	double xi;
-	long double precision = 1;//precision souhaitee pour les resultats
-	long double epsilon_i; //precision des resultats de l iteration
+	double precision = 1;//precision souhaitee pour les resultats
+	double epsilon_i; //precision des resultats de l iteration
 	
 	
 	gsl_vector *y_k = gsl_vector_alloc(n);
 	gsl_vector *y_k_moins_un = gsl_vector_alloc(n);
 
-	//gsl_vector v_m [m];
-	gsl_matrix *v_m = gsl_matrix_alloc(m,n);
+	gsl_matrix *v_m = gsl_matrix_alloc(n,m);
 	
 	// tableau de flottants contenant les resultats des produits scalaires sur les vecteurs (y_k et y_k-1) ou (y_k et y_k)
 	double c[2*m+1];
 
 	//tabelau de vecteur 
-	gsl_matrix *q = gsl_matrix_alloc(m,m);
+	gsl_matrix *q = gsl_matrix_alloc(n,m);
 
 	//matrices contruites a partir du tableau c 
 	gsl_matrix *b_m = gsl_matrix_alloc(m,m);
@@ -44,8 +41,8 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x)
 	//vecteur contentant un vecteur propre
 	gsl_vector * vecteur_propre = gsl_vector_alloc(m);
 
-	gsl_vector *vecteur_A_Qi = gsl_vector_alloc(m);
-	gsl_vector *vecteur_lamba_Q = gsl_vector_alloc(m);
+	gsl_vector *vecteur_A_Qi = gsl_vector_alloc(n);
+	gsl_vector *vecteur_lamba_Q = gsl_vector_alloc(n);
 
 	//vecteur temporaire pour le calcul de x
 	gsl_vector *tmp_vector = gsl_vector_alloc(m);
@@ -59,7 +56,6 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x)
 	while(!est_precis && iteration < ITERATION_MAX)
 	{
 
-printf("Debut boucle\n");
 		normalize_vector(x);
 		y_k_moins_un = x;
 
@@ -76,7 +72,6 @@ printf("Debut boucle\n");
 
 		//Constitution des matrices b_m-1, b_m 
 
-printf("Constitution matrices bm et bm-1\n");
 		for(int ligne = 0 ; ligne < m ; ligne++)
 		{
 			for(int colonne = 0; colonne < m; colonne++)
@@ -85,7 +80,6 @@ printf("Constitution matrices bm et bm-1\n");
 				gsl_matrix_set(b_m, ligne , colonne, c[colonne + ligne + 1]);
 			}
 		}
-printf("Etape 2\n");
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 
@@ -101,13 +95,11 @@ printf("Etape 2\n");
 
 	////Etape 3
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
-printf("Etape3\n");
 		for(int i = 0; i < m; i++)
 		{
 			gsl_matrix_get_row(vecteur_propre, vecteurs_propres, i);
 			gsl_matrix_set_col(q, i, matrix_vector_product(v_m, vecteur_propre));
 		}
-printf("Etape 4\n");
 	////Etape 4
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
 
@@ -122,12 +114,12 @@ printf("Etape 4\n");
 			if(epsilon_i > precision)
 			{
 				est_precis = 0;
+				//printf("precis = faux \n");
 			}
 		}
 		iteration++;
-printf("calcul x\n");
 		//re-calcul de x
-		for(int i = 0; i < m; i++)
+		for(int i = 0; i < n; i++)
 		{
 			gsl_matrix_get_row(tmp_vector, q, i);
 			xi =0;
@@ -135,8 +127,9 @@ printf("calcul x\n");
 			{
 				xi+=gsl_vector_get(tmp_vector, j);
 			}
-			//xi = gsl_vector_sum(tmp_vector);
 			gsl_vector_set(x,i, xi );
 		}
+		printf("est precis : %d\n", est_precis);
+		printf("iteration : %d\n", iteration);
 	}
 }

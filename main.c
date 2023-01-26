@@ -187,12 +187,13 @@ int main(){
 	}
 
 
-	gsl_vector *x = gsl_vector_alloc(5);
+	gsl_vector *x = gsl_vector_alloc(10);
 
 	gsl_vector_set_zero(x);
 	gsl_vector_set(x, 0, (double)1);
+	print_vector_contents(x);
 
-	algo_PRR(A,x);
+	algo_PRR(A,x, 10, 5);
 
 	return 0;
 }
