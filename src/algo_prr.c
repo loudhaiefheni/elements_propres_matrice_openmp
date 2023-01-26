@@ -51,12 +51,11 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x)
 
 	
 
-	// FAIRE UNE FONCTION DE TT ça 
 //// Etape 1 
 //1. Calculer C2k−1 = (yk, yk−1), C2k = (yk, yk) où yk = Ayk−1, for k = 1, m.
 	iteration = 0;
 	est_precis = 0;
-	while(!est_precis || iteration < ITERATION_MAX)
+	while(!est_precis && iteration < ITERATION_MAX)
 	{
 
 		normalize_vector(x);
@@ -98,6 +97,7 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x)
 		gsl_eigen_symmv(f_m, valeurs_propres, vecteurs_propres, my_workspace);
 		gsl_eigen_symmv_free(my_workspace);
 
+	////Etape 3
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
 
 		for(int i = 0; i < m; i++)
@@ -108,6 +108,7 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x)
 			print_vector_contents(q[i]);
 		}
 
+	////Etape 4
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
 
 		est_precis = 1;
@@ -117,7 +118,7 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x)
 			vecteur_lamba_Q = q[i];
 			gsl_vector_scale(vecteur_lamba_Q, gsl_vector_get(valeurs_propres, i));
 			gsl_vector_sub(vecteur_A_Qi, vecteur_lamba_Q);
-			epsilon_i = normalize_vector(vecteur_A_Qi);
+			epsilon_i = get_norm(vecteur_A_Qi); 
 			if(epsilon_i > precision)
 			{
 				est_precis = 0;
