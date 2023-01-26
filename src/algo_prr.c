@@ -10,8 +10,8 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 	int est_precis; //booleen pour la precision de l iteration
 	int iteration;
 	double xi;
-	double precision = 1;//precision souhaitee pour les resultats
-	double epsilon_i; //precision des resultats de l iteration
+	double precision = 0.01;//precision souhaitee pour les resultats
+	double epsilon_i, epsilon_max; //precision des resultats de l iteration
 	
 	
 	gsl_vector *y_k = gsl_vector_alloc(n);
@@ -102,8 +102,7 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 		}
 	////Etape 4
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
-
-		est_precis = 1;
+		epsilon_max = 0;
 		for (int i =0; i < m ; i++ )
 		{
 			gsl_matrix_get_col(vecteur_lamba_Q, q, i);
@@ -111,12 +110,17 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 			gsl_vector_scale(vecteur_lamba_Q, gsl_vector_get(valeurs_propres, i));
 			gsl_vector_sub(vecteur_A_Qi, vecteur_lamba_Q);
 			epsilon_i = get_norm(vecteur_A_Qi); 
-			if(epsilon_i > precision)
+			
+			if(epsilon_i > epsilon_max)
 			{
-				est_precis = 0;
-				//printf("precis = faux \n");
+				epsilon_max = epsilon_i;
 			}
 		}
+		if(epsilon_max < precision)
+		{
+			est_precis = 1;
+		}
+
 		iteration++;
 		//re-calcul de x
 		for(int i = 0; i < n; i++)
@@ -129,7 +133,8 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 			}
 			gsl_vector_set(x,i, xi );
 		}
-		printf("est precis : %d\n", est_precis);
-		printf("iteration : %d\n", iteration);
+printf("epsilon max : %f\n", epsilon_max);
+printf("est precis : %d\n", est_precis);
+printf("iteration : %d\n", iteration);
 	}
 }

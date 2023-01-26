@@ -5,16 +5,12 @@ double get_norm(gsl_vector *vector)
 	// calcul de la norme
 	double xi;
 	double sum = 0;
-	print_vector_contents(vector);
 	for (int i = 0; i < vector->size; i++)
 	{
 		xi = gsl_vector_get(vector, i);
-		//printf("i: %d,xi : %lf\n",i,xi);
 		sum += xi*xi;
 	}
-	printf("sum : %f\n", sum);
 	double norm = sqrt(sum);
-	printf("norm : %f\n", norm);
 	return norm;
 }
 

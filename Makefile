@@ -4,13 +4,16 @@ gsl_flags=-lgsl -lgslcblas -lm
 FLAGS=-Wall
 cc=gcc
 
-programme: main.o algo.o inverter.o input_andCo.o
+programme: main.o algo.o matrix.o inverter.o input_andCo.o
 			$(cc) $(FLAGS) -o $@ $(gsl_lib) $^ $(gsl_flags) 
 
 main.o: main.c src/inverter.c
 			$(cc) $(FLAGS) $(gsl_include) -c $^
 
 algo.o: src/algo_prr.c
+			$(cc) $(FLAGS) -o $@ $(gsl_include) -c $^
+
+matrix.o: src/matrix.c
 			$(cc) $(FLAGS) -o $@ $(gsl_include) -c $^
 
 inverter.o: src/inverter.c
