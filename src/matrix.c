@@ -48,6 +48,7 @@ gsl_matrix* remplir_matrice(char *nom_fichier)
             exit(EXIT_FAILURE);
         }
         gsl_matrix_set(matrice, i - 1, j - 1, valeur);
+        gsl_matrix_set(matrice, j - 1, i - 1, valeur);
     }
 
     fclose(f);

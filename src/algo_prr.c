@@ -41,11 +41,11 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 	//vecteur contentant un vecteur propre
 	gsl_vector * vecteur_propre = gsl_vector_alloc(m);
 
-	gsl_vector *vecteur_A_Qi = gsl_vector_alloc(n);
-	gsl_vector *vecteur_lamba_Q = gsl_vector_alloc(n);
+	gsl_vector * vecteur_A_Qi = gsl_vector_alloc(n);
+	gsl_vector * vecteur_lambda_Q = gsl_vector_alloc(n);
 
 	//vecteur temporaire pour le calcul de x
-	gsl_vector *tmp_vector = gsl_vector_alloc(m);
+	gsl_vector * tmp_vector = gsl_vector_alloc(m);
 
 	
 
@@ -80,39 +80,62 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 				gsl_matrix_set(b_m, ligne , colonne, c[colonne + ligne + 1]);
 			}
 		}
+
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 
 		e_m = invert_a_matrix(b_m_moins_un, m);
 		gsl_blas_dsymm(CblasLeft, CblasUpper, 1, e_m, b_m, 0, f_m);
-
+printf("print_matrix_contents(f_m);\n");
+print_matrix_contents(f_m);
 		// Calcul valeurs et vecteurs propres de f_m
-		gsl_eigen_symmv_workspace *my_workspace;
-		my_workspace = gsl_eigen_symmv_alloc(n);/// a voir si c est pa m au lieu de n
-
-		gsl_eigen_symmv(f_m, valeurs_propres, vecteurs_propres, my_workspace);
-		gsl_eigen_symmv_free(my_workspace);
+		gsl_vector_complex *vecteur_complex_transition = gsl_vector_complex_alloc(m);
+		gsl_matrix_complex *vecteurs_propres_complexes = gsl_matrix_complex_alloc(m, m);
+		gsl_eigen_nonsymmv_workspace *my_workspace;
+		my_workspace = gsl_eigen_nonsymmv_alloc(m);/// a voir si c est pa m au lieu de n
+		gsl_eigen_nonsymmv_params(1, my_workspace); // valeur possiblement modifiable
+		gsl_eigen_nonsymmv(f_m, vecteur_complex_transition, vecteurs_propres_complexes, my_workspace);
+		*valeurs_propres = (gsl_vector_complex_real(vecteur_complex_transition).vector);
+		//vecteurs_propres = gsl_matrix_complex_real(V);
+		gsl_eigen_nonsymmv_free(my_workspace);
 
 	////Etape 3
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
+		
+printf("print_vector_contents(valeurs_propres);\n");
+print_vector_contents(valeurs_propres);
+printf("print_matrix_contents(vecteurs_propres);\n");
+print_matrix_contents(vecteurs_propres);
 		for(int i = 0; i < m; i++)
 		{
-			gsl_matrix_get_row(vecteur_propre, vecteurs_propres, i);
+			gsl_matrix_complex_get_row(vecteur_complex_transition, vecteurs_propres_complexes, i);
+			*vecteur_propre = gsl_vector_complex_real(vecteur_complex_transition).vector;
 			gsl_matrix_set_col(q, i, matrix_vector_product(v_m, vecteur_propre));
 		}
+
+printf("print_matrix_contents(q);\n");
+print_matrix_contents(q);
 	////Etape 4
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
 		epsilon_max = 0;
-		for (int i =0; i < m ; i++ )
+		for (int i = 0; i < m ; i++ )
 		{
-			gsl_matrix_get_col(vecteur_lamba_Q, q, i);
-			vecteur_A_Qi = matrix_vector_product(a,vecteur_lamba_Q);
-			gsl_vector_scale(vecteur_lamba_Q, gsl_vector_get(valeurs_propres, i));
-			gsl_vector_sub(vecteur_A_Qi, vecteur_lamba_Q);
+			gsl_matrix_get_col(vecteur_lambda_Q, q, i);
+			vecteur_A_Qi = matrix_vector_product(a, vecteur_lambda_Q);
+printf("print_vector_contents(vecteur_A_Qi);\n");
+print_vector_contents(vecteur_A_Qi);
+			printf("Calcul lambda * Qi i:%d\n",i);
+printf("print_vector_contents(vecteur_Q);\n");
+print_vector_contents(vecteur_lambda_Q);
+			gsl_vector_scale(vecteur_lambda_Q, gsl_vector_get(valeurs_propres, i));
+printf("print_vector_contents(vecteur_lambda_Q);\n");
+print_vector_contents(vecteur_lambda_Q);
+			gsl_vector_sub(vecteur_A_Qi, vecteur_lambda_Q);
 			epsilon_i = get_norm(vecteur_A_Qi); 
 			
 			if(epsilon_i > epsilon_max)
 			{
+				printf("AHAHAHAH : %lf\n", epsilon_i);
 				epsilon_max = epsilon_i;
 			}
 		}
@@ -126,13 +149,14 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 		for(int i = 0; i < n; i++)
 		{
 			gsl_matrix_get_row(tmp_vector, q, i);
-			xi =0;
+			xi = 0;
 			for (int j =0; j<m ; j++)
 			{
-				xi+=gsl_vector_get(tmp_vector, j);
+				xi += gsl_vector_get(tmp_vector, j);
 			}
 			gsl_vector_set(x,i, xi );
 		}
+print_vector_contents(x);
 printf("epsilon max : %f\n", epsilon_max);
 printf("est precis : %d\n", est_precis);
 printf("iteration : %d\n", iteration);

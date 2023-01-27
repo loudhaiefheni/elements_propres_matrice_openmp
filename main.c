@@ -14,8 +14,8 @@ int main(){
 //// Lecture des fichiers contenant les matrices et créations des matrices correspondantes
 
 	gsl_matrix *a;
-    a = remplir_matrice("lund_a.mtx");
-    afficher_matrice(a);
+	a = remplir_matrice("test.mtx");
+	afficher_matrice(a);
 
 	int n = a->size1;
 	int m = (int)n*0.1;
@@ -32,8 +32,9 @@ int main(){
 
 */
 	gsl_vector *x = gsl_vector_alloc(n);
-	gsl_vector_set_zero(x);
-	gsl_vector_set(x, 0, (double)1);
+	gsl_vector_set_zero(x); 
+	//gsl_vector_set_all(x, (double)1.0);
+	gsl_vector_set(x, 0, (double)2);
 	print_vector_contents(x);
 
 	algo_PRR(a,x, n, m);
