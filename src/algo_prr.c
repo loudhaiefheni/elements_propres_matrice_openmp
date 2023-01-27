@@ -80,11 +80,18 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 				gsl_matrix_set(b_m, ligne , colonne, c[colonne + ligne + 1]);
 			}
 		}
-
+	printf("Bm\n");
+	print_matrix_contents(b_m);
+	printf("\nBm-1\n");
+	print_matrix_contents(b_m_moins_un);
+	printf("\nVm\n");
+	print_matrix_contents(v_m);
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 
 		e_m = invert_a_matrix(b_m_moins_un, m);
+	printf("\nEm\n");
+	print_matrix_contents(e_m);
 		gsl_blas_dsymm(CblasLeft, CblasUpper, 1, e_m, b_m, 0, f_m);
 printf("print_matrix_contents(f_m);\n");
 print_matrix_contents(f_m);

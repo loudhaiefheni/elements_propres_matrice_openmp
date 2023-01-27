@@ -14,11 +14,11 @@ int main(){
 //// Lecture des fichiers contenant les matrices et créations des matrices correspondantes
 
 	gsl_matrix *a;
-	a = remplir_matrice("test.mtx");
-	afficher_matrice(a);
+    a = remplir_matrice("mine.mtx");
+    afficher_matrice(a);
 
 	int n = a->size1;
-	int m = (int)n*0.1;
+	int m = 4;
 
 /*
 	gsl_matrix *A = gsl_matrix_alloc(n,n);
