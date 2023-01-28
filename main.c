@@ -16,7 +16,7 @@ int main(){
 
 	//Initialisation des tailles n et m (espace de depart et sous espace)
 	int n = a->size1;
-	int m = (int)0.1*n;
+	int m = (int)(n/10);
 
 	//Initialisation du vecteur x de taille n (1,0,0,...)
 	gsl_vector *x = gsl_vector_alloc(n);

@@ -1,7 +1,7 @@
 #gsl_include=-I/usr/include/
 #gsl_lib=-L/usr/lib/x86_64-linux-gnu/
 gsl_flags=-lgsl -lgslcblas -lm
-FLAGS=-Wall -fopenmp
+FLAGS=-Wall -fopenmp -g
 cc=gcc
 
 programme: main.o algo.o load_matrix.o inverter.o input_andCo.o

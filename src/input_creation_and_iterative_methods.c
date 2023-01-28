@@ -76,7 +76,7 @@ gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector)
 	gsl_vector *vector_result = gsl_vector_alloc(matrix->size1);
 	
 	//Parallelisation de la premiere boucle qui parcourt les lignes de la matrice
-	#pragma omp parallel for private(result)
+	// #pragma omp parallel for private(result)
 	for(row = 0; row <matrix->size1; row++)
 	{
 		result = 0;
