@@ -5,8 +5,10 @@ double get_norm(gsl_vector *vector)
 	// calcul de la norme
 	double xi;
 	double sum = 0;
+	#pragma omp parallel for reduction(+ : sum)
 	for (int i = 0; i < vector->size; i++)
 	{
+		// printf("Task dist %d WITH VALUE %d \n", omp_get_thread_num(), i);
 		xi = gsl_vector_get(vector, i);
 		sum += xi*xi;
 	}
@@ -19,8 +21,10 @@ int normalize_vector(gsl_vector *vector_to_normalize)
 	double xi;
 	double norm = get_norm(vector_to_normalize);
 	
+	#pragma omp parallel for private(xi)
 	for (int i = 0; i < vector_to_normalize->size; i++)
 	{
+		// printf("Task dist %d WITH VALUE %d \n", omp_get_thread_num(), i);
 		xi = gsl_vector_get(vector_to_normalize, i);
 		xi = xi / norm;
 		gsl_vector_set(vector_to_normalize, i, xi);
