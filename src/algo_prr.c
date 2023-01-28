@@ -77,6 +77,7 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 			y_k = matrix_vector_product(A, y_k_moins_un);
 			c[2*k-1] = scalar_product(y_k, y_k_moins_un);
 			c[2*k] = scalar_product(y_k, y_k);
+			gsl_vector_free(y_k_moins_un);
 			y_k_moins_un = y_k;
 		}
 
@@ -187,7 +188,6 @@ printf("iteration : %d\n", iteration);
 
 	//Liberation de la memoire
 	gsl_vector_free(y_k);
-	gsl_vector_free(y_k_moins_un);
 	gsl_vector_free(valeurs_propres);
 	gsl_vector_free(vecteur_propre);
 	gsl_vector_free(vecteur_A_Qi);

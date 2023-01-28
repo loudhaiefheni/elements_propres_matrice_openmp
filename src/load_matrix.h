@@ -8,6 +8,5 @@
 
 gsl_matrix* remplir_matrice(char* file_name);
 gsl_spmatrix* charger_matrice(char *nom_fichier);
-void afficher_matrice(gsl_matrix *matrix);
 
 #endif

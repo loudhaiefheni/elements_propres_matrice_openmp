@@ -2,7 +2,7 @@
 #include "src/input_creation_and_iterative_methods.h"
 #include "src/algo_prr.h"
 #include "src/load_matrix.h"
-#include "main.h"
+#include "header.h"
 
 // https://en.wikipedia.org/wiki/Singular_value_decomposition
 // https://www.gnu.org/software/gsl/doc/html/eigen.html#c.gsl_eigen_symm_workspace
@@ -12,7 +12,7 @@ int main(){
 	//Initialisation et lecture de la matrice A depuis un fichier
 	gsl_matrix *a;
 	a = remplir_matrice("test.mtx");
-	afficher_matrice(a);
+	print_matrix_contents(a);
 
 	//Initialisation des tailles n et m (espace de depart et sous espace)
 	int n = a->size1;

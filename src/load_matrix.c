@@ -65,16 +65,3 @@ gsl_matrix* remplir_matrice(char *nom_fichier)
 	fclose(f);
 	return matrice;
 }
-
-void afficher_matrice(gsl_matrix *matrice)
-{
-	// Imprimer la matrice
-	for (size_t i = 0; i < matrice->size1; i++)
-	{
-		for (size_t j = 0; j < matrice->size2; j++)
-		{
-			printf("%g ", gsl_matrix_get(matrice, i, j));
-		}
-		printf("\n");
-	}
-}
