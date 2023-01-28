@@ -3,7 +3,7 @@
 #include "algo_prr.h"
 
 
-void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
+void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 {
 //// Initialisation des constantes, des vecteurs et des matrices
 
@@ -35,7 +35,6 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 	gsl_matrix *e_m = gsl_matrix_alloc(m,m);
 
 	//matrice contenant les vecteurs propres et vecteur contenant les valeurs propres
-	gsl_matrix * vecteurs_propres = gsl_matrix_alloc(m, m);
 	gsl_vector * valeurs_propres = gsl_vector_alloc(m);
 
 	//vecteur contentant un vecteur propre
@@ -64,7 +63,7 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 		for(int k = 1 ; k <= m ; k++)
 		{
 			gsl_matrix_set_col(v_m, k-1, y_k_moins_un);
-			y_k = matrix_vector_product(a, y_k_moins_un);
+			y_k = matrix_vector_product(A, y_k_moins_un);
 			c[2*k-1] = scalar_product(y_k, y_k_moins_un);
 			c[2*k] = scalar_product(y_k, y_k);
 			y_k_moins_un = y_k;
@@ -83,8 +82,15 @@ void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m)
 
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
+	//
 
+printf("print_matrix_contents(b_m_moins_un);\n");
+print_matrix_contents(b_m_moins_un);
 		e_m = invert_a_matrix(b_m_moins_un, m);
+printf("print_matrix_contents(e_m);\n");
+print_matrix_contents(e_m);
+printf("print_matrix_contents(b_m);\n");
+print_matrix_contents(b_m);
 		gsl_blas_dsymm(CblasLeft, CblasUpper, 1, e_m, b_m, 0, f_m);
 printf("print_matrix_contents(f_m);\n");
 print_matrix_contents(f_m);
@@ -95,6 +101,7 @@ print_matrix_contents(f_m);
 		my_workspace = gsl_eigen_nonsymmv_alloc(m);/// a voir si c est pa m au lieu de n
 		gsl_eigen_nonsymmv_params(1, my_workspace); // valeur possiblement modifiable
 		gsl_eigen_nonsymmv(f_m, vecteur_complex_transition, vecteurs_propres_complexes, my_workspace);
+		gsl_eigen_nonsymmv_sort(vecteur_complex_transition, vecteurs_propres_complexes, GSL_EIGEN_SORT_VAL_DESC);
 		*valeurs_propres = (gsl_vector_complex_real(vecteur_complex_transition).vector);
 		//vecteurs_propres = gsl_matrix_complex_real(V);
 		gsl_eigen_nonsymmv_free(my_workspace);
@@ -102,14 +109,15 @@ print_matrix_contents(f_m);
 	////Etape 3
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
 		
+printf("/////// ETAPE 3 ///////////\n");
 printf("print_vector_contents(valeurs_propres);\n");
 print_vector_contents(valeurs_propres);
-printf("print_matrix_contents(vecteurs_propres);\n");
-print_matrix_contents(vecteurs_propres);
 		for(int i = 0; i < m; i++)
 		{
-			gsl_matrix_complex_get_row(vecteur_complex_transition, vecteurs_propres_complexes, i);
+			gsl_matrix_complex_get_col(vecteur_complex_transition, vecteurs_propres_complexes, i);
 			*vecteur_propre = gsl_vector_complex_real(vecteur_complex_transition).vector;
+printf("print_matrix_contents(vecteur_propre[i]);\n ::: %d de 0 à %d ", i, m);
+print_vector_contents(vecteur_propre);
 			gsl_matrix_set_col(q, i, matrix_vector_product(v_m, vecteur_propre));
 		}
 
@@ -121,12 +129,12 @@ print_matrix_contents(q);
 		for (int i = 0; i < m ; i++ )
 		{
 			gsl_matrix_get_col(vecteur_lambda_Q, q, i);
-			vecteur_A_Qi = matrix_vector_product(a, vecteur_lambda_Q);
+printf("print_vector_contents(vecteur_Q);\n");
+print_vector_contents(vecteur_lambda_Q);
+			vecteur_A_Qi = matrix_vector_product(A, vecteur_lambda_Q);
 printf("print_vector_contents(vecteur_A_Qi);\n");
 print_vector_contents(vecteur_A_Qi);
 			printf("Calcul lambda * Qi i:%d\n",i);
-printf("print_vector_contents(vecteur_Q);\n");
-print_vector_contents(vecteur_lambda_Q);
 			gsl_vector_scale(vecteur_lambda_Q, gsl_vector_get(valeurs_propres, i));
 printf("print_vector_contents(vecteur_lambda_Q);\n");
 print_vector_contents(vecteur_lambda_Q);

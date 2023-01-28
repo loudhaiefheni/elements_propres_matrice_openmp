@@ -4,7 +4,7 @@ gsl_flags=-lgsl -lgslcblas -lm
 FLAGS=-Wall
 cc=gcc
 
-programme: main.o algo.o matrix.o inverter.o input_andCo.o
+programme: main.o algo.o load_matrix.o inverter.o input_andCo.o
 			$(cc) $(FLAGS) -o $@ $(gsl_lib) $^ $(gsl_flags) 
 
 main.o: main.c src/inverter.c
@@ -13,7 +13,7 @@ main.o: main.c src/inverter.c
 algo.o: src/algo_prr.c
 			$(cc) $(FLAGS) -o $@ $(gsl_include) -c $^
 
-matrix.o: src/matrix.c
+load_matrix.o: src/load_matrix.c
 			$(cc) $(FLAGS) -o $@ $(gsl_include) -c $^
 
 inverter.o: src/inverter.c
@@ -24,13 +24,13 @@ input_andCo.o: src/input_creation_and_iterative_methods.c
 
 
 clean: *.o
-	rm *.o 
+	rm *.o
 	rm programme
 
-test: test.o
-			$(cc) -o $@ $(gsl_lib) test.o $(gsl_flags)
+test: test.o input_andCo.o load_matrix.o
+			$(cc) -o $@ $(gsl_lib) $^ $(gsl_flags)
 
-test.o: test.c
+test.o: test.c  
 			$(cc) -o $@ $(gsl_include) -c $^
 
 

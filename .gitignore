@@ -54,7 +54,12 @@ dkms.conf
 
 # others
 *.pdf
+# files used for testing
+ZZZ.mtx
+test.c
+test
 
 
 sequentiel
 programme
+

@@ -35,6 +35,3 @@ gsl_matrix * invert_a_matrix(gsl_matrix *matrix, int size)
 
     return inv;
 }
-
-
-
