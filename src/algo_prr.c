@@ -53,6 +53,13 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 	gsl_vector * vecteur_A_Qi = gsl_vector_alloc(n);
 	gsl_vector * vecteur_lambda_Q = gsl_vector_alloc(n);
 
+	// Vecteur temporaire pour recuperer les valeurs propres complexes
+	gsl_vector_complex *valeurs_propres_complexes = gsl_vector_complex_alloc(m);
+	gsl_vector_complex *vecteur_propre_complex = gsl_vector_complex_alloc(m);
+	// Matrice temporaire pour recuperer les vecteurs propres complexes
+	gsl_matrix_complex *vecteurs_propres_complexes = gsl_matrix_complex_alloc(m, m);
+	
+
 	//vecteur temporaire pour le calcul de x
 	gsl_vector * tmp_vector = gsl_vector_alloc(m);
 
@@ -110,14 +117,12 @@ print_matrix_contents(b_m);
 printf("print_matrix_contents(f_m);\n");
 print_matrix_contents(f_m);
 		// Calcul valeurs et vecteurs propres de f_m
-		gsl_vector_complex *vecteur_complex_transition = gsl_vector_complex_alloc(m);
-		gsl_matrix_complex *vecteurs_propres_complexes = gsl_matrix_complex_alloc(m, m);
 		gsl_eigen_nonsymmv_workspace *my_workspace;
 		my_workspace = gsl_eigen_nonsymmv_alloc(m);
 		gsl_eigen_nonsymmv_params(1, my_workspace); // valeur possiblement modifiable
-		gsl_eigen_nonsymmv(f_m, vecteur_complex_transition, vecteurs_propres_complexes, my_workspace);
-		gsl_eigen_nonsymmv_sort(vecteur_complex_transition, vecteurs_propres_complexes, GSL_EIGEN_SORT_VAL_DESC);
-		*valeurs_propres = (gsl_vector_complex_real(vecteur_complex_transition).vector);
+		gsl_eigen_nonsymmv(f_m, valeurs_propres_complexes, vecteurs_propres_complexes, my_workspace);
+		gsl_eigen_nonsymmv_sort(valeurs_propres_complexes, vecteurs_propres_complexes, GSL_EIGEN_SORT_VAL_DESC);
+		*valeurs_propres = (gsl_vector_complex_real(valeurs_propres_complexes).vector);
 		//vecteurs_propres = gsl_matrix_complex_real(V);
 		gsl_eigen_nonsymmv_free(my_workspace);
 
@@ -130,8 +135,8 @@ print_vector_contents(valeurs_propres);
 
 		for(int i = 0; i < m; i++)
 		{
-			gsl_matrix_complex_get_col(vecteur_complex_transition, vecteurs_propres_complexes, i);
-			*vecteur_propre = gsl_vector_complex_real(vecteur_complex_transition).vector;
+			gsl_matrix_complex_get_col(vecteur_propre_complex, vecteurs_propres_complexes, i);
+			*vecteur_propre = gsl_vector_complex_real(vecteur_propre_complex).vector;
 printf("print_matrix_contents(vecteur_propre[i]);\n ::: %d de 0 à %d ", i, m);
 print_vector_contents(vecteur_propre);
 			gsl_matrix_set_col(q, i, matrix_vector_product(v_m, vecteur_propre));
@@ -150,7 +155,8 @@ print_vector_contents(vecteur_lambda_Q);
 			vecteur_A_Qi = matrix_vector_product(A, vecteur_lambda_Q);
 printf("print_vector_contents(vecteur_A_Qi);\n");
 print_vector_contents(vecteur_A_Qi);
-printf("Calcul lambda * Qi i:%d\n",i);
+printf("Calcul lambda(i) * Qi i:%d\n",i);
+printf("lambda(i) :%f\n", gsl_vector_get(valeurs_propres, i));
 			gsl_vector_scale(vecteur_lambda_Q, gsl_vector_get(valeurs_propres, i));
 printf("print_vector_contents(vecteur_lambda_Q);\n");
 print_vector_contents(vecteur_lambda_Q);
