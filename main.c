@@ -15,10 +15,10 @@ int main(){
 
 	gsl_matrix *a;
 	a = remplir_matrice("test.mtx");
-	// afficher_matrice(a);
+	afficher_matrice(a);
 
 	int n = a->size1;
-	int m = (int)n*0.1;
+	int m = (int)0.1*n;
 
 /*
 	gsl_matrix *A = gsl_matrix_alloc(n,n);

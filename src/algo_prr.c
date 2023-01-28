@@ -79,7 +79,12 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 				gsl_matrix_set(b_m, ligne , colonne, c[colonne + ligne + 1]);
 			}
 		}
-
+	printf("Bm\n");
+	print_matrix_contents(b_m);
+	printf("\nBm-1\n");
+	print_matrix_contents(b_m_moins_un);
+	printf("\nVm\n");
+	print_matrix_contents(v_m);
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 	//

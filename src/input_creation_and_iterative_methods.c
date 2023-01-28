@@ -32,7 +32,8 @@ int normalize_vector(gsl_vector *vector_to_normalize)
 double scalar_product(gsl_vector *vector1, gsl_vector *vector2)
 {
 	assert(vector1->size == vector2->size);
-	double ret_value;
+	double ret_value = 0; 
+	//#pragma omp parallel for reduction(+ : ret_value)
 	for (size_t i = 0; i < vector1->size; i++)
 		ret_value += gsl_vector_get(vector1, i) * gsl_vector_get(vector2, i);
 	return ret_value;
