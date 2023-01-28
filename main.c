@@ -9,37 +9,25 @@
 
 int main(){
 
-///////////////////////////////////////// Initialisation ///////////////////////////////////////////
-
-//// Lecture des fichiers contenant les matrices et créations des matrices correspondantes
-
+	//Initialisation et lecture de la matrice A depuis un fichier
 	gsl_matrix *a;
 	a = remplir_matrice("test.mtx");
 	afficher_matrice(a);
 
+	//Initialisation des tailles n et m (espace de depart et sous espace)
 	int n = a->size1;
 	int m = (int)0.1*n;
 
-/*
-	gsl_matrix *A = gsl_matrix_alloc(n,n);
-	for(int r =0; r< n; r++)
-	{
-		for(int c=0; c<n; c++)
-		{
-			gsl_matrix_set(A, r, c, (double)r);
-		}
-	}
-
-*/
+	//Initialisation du vecteur x de taille n (1,0,0,...)
 	gsl_vector *x = gsl_vector_alloc(n);
 	gsl_vector_set_zero(x); 
 	gsl_vector_set(x, 0, (double)1);
 	print_vector_contents(x);
 
+	//Lancement de l algorithme sur la matrice lue et le vecteur x
 	algo_PRR(a,x, n, m);
 
-	
-    // Clean up
+    //Liberation de la memoire
     gsl_matrix_free(a);
 
 	return 0;

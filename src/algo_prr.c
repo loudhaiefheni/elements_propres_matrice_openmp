@@ -2,27 +2,36 @@
 #include "input_creation_and_iterative_methods.h"
 #include "algo_prr.h"
 
-
+/**
+ * @brief Implementation de l'algorithme de Padé-Rayleigh-Ritz (PRR)
+ * N. Emad. The Padé-Rayleigh-Ritz Method for Solving Large Symmetric Eigenproblem. Numerical Algorithms, 11(1-4):159{179, 1996.
+ * 
+ * @param A Matrice de grande taille (n) ou l on recherche les valeurs et vecteurs propres
+ * @param x Vecteur de taille n pour l'initialisation de l'algorithme
+ * @param n taile de la matrice A
+ * @param m taille du sous espace pour les calculs des valeurs et vecteurs propores
+ */
 void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 {
 //// Initialisation des constantes, des vecteurs et des matrices
 
 	int est_precis; //booleen pour la precision de l iteration
-	int iteration;
-	double xi;
+	int iteration;//Nombre d iteration 
+	double xi;//Variable utillisée dans le calcul de du nouveau vecteur x
 	double precision = 0.01;//precision souhaitee pour les resultats
 	double epsilon_i, epsilon_max; //precision des resultats de l iteration
 	
-	
+	//Vecteurs utilisés pour le calcul du tableau c
 	gsl_vector *y_k = gsl_vector_alloc(n);
 	gsl_vector *y_k_moins_un = gsl_vector_alloc(n);
 
+	//Matrice contenant les vecteur y_k
 	gsl_matrix *v_m = gsl_matrix_alloc(n,m);
 	
 	// tableau de flottants contenant les resultats des produits scalaires sur les vecteurs (y_k et y_k-1) ou (y_k et y_k)
 	double c[2*m+1];
 
-	//tabelau de vecteur 
+	//Matrice contenant les vecteurs resultant du produit de Vm avec les vecteurs propres de Fm
 	gsl_matrix *q = gsl_matrix_alloc(n,m);
 
 	//matrices contruites a partir du tableau c 
@@ -40,6 +49,7 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 	//vecteur contentant un vecteur propre
 	gsl_vector * vecteur_propre = gsl_vector_alloc(m);
 
+	//Vecteurs temporaire pour le calcul de la precision
 	gsl_vector * vecteur_A_Qi = gsl_vector_alloc(n);
 	gsl_vector * vecteur_lambda_Q = gsl_vector_alloc(n);
 
@@ -52,14 +62,15 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 //1. Calculer C2k−1 = (yk, yk−1), C2k = (yk, yk) où yk = Ayk−1, for k = 1, m.
 	iteration = 0;
 	est_precis = 0;
+	//On s arrete lorsque la precision est correcte ou qu on a depasse le nombre d iteration fixe
 	while(!est_precis && iteration < ITERATION_MAX)
 	{
-
+		//Initialisation du vecteur y0 avec le vecteur x
 		normalize_vector(x);
 		y_k_moins_un = x;
 
+		//Calcul des produit scalaire du tableau c
 		c[0] = scalar_product(y_k_moins_un, y_k_moins_un);
-
 		for(int k = 1 ; k <= m ; k++)
 		{
 			gsl_matrix_set_col(v_m, k-1, y_k_moins_un);
@@ -70,7 +81,6 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 		}
 
 		//Constitution des matrices b_m-1, b_m 
-
 		for(int ligne = 0 ; ligne < m ; ligne++)
 		{
 			for(int colonne = 0; colonne < m; colonne++)
@@ -79,15 +89,14 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 				gsl_matrix_set(b_m, ligne , colonne, c[colonne + ligne + 1]);
 			}
 		}
-	printf("Bm\n");
-	print_matrix_contents(b_m);
-	printf("\nBm-1\n");
-	print_matrix_contents(b_m_moins_un);
-	printf("\nVm\n");
-	print_matrix_contents(v_m);
+printf("Bm\n");
+print_matrix_contents(b_m);
+printf("\nBm-1\n");
+print_matrix_contents(b_m_moins_un);
+printf("\nVm\n");
+print_matrix_contents(v_m);
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
-	//
 
 printf("print_matrix_contents(b_m_moins_un);\n");
 print_matrix_contents(b_m_moins_un);
@@ -103,7 +112,7 @@ print_matrix_contents(f_m);
 		gsl_vector_complex *vecteur_complex_transition = gsl_vector_complex_alloc(m);
 		gsl_matrix_complex *vecteurs_propres_complexes = gsl_matrix_complex_alloc(m, m);
 		gsl_eigen_nonsymmv_workspace *my_workspace;
-		my_workspace = gsl_eigen_nonsymmv_alloc(m);/// a voir si c est pa m au lieu de n
+		my_workspace = gsl_eigen_nonsymmv_alloc(m);
 		gsl_eigen_nonsymmv_params(1, my_workspace); // valeur possiblement modifiable
 		gsl_eigen_nonsymmv(f_m, vecteur_complex_transition, vecteurs_propres_complexes, my_workspace);
 		gsl_eigen_nonsymmv_sort(vecteur_complex_transition, vecteurs_propres_complexes, GSL_EIGEN_SORT_VAL_DESC);
@@ -117,6 +126,7 @@ print_matrix_contents(f_m);
 printf("/////// ETAPE 3 ///////////\n");
 printf("print_vector_contents(valeurs_propres);\n");
 print_vector_contents(valeurs_propres);
+
 		for(int i = 0; i < m; i++)
 		{
 			gsl_matrix_complex_get_col(vecteur_complex_transition, vecteurs_propres_complexes, i);
@@ -139,7 +149,7 @@ print_vector_contents(vecteur_lambda_Q);
 			vecteur_A_Qi = matrix_vector_product(A, vecteur_lambda_Q);
 printf("print_vector_contents(vecteur_A_Qi);\n");
 print_vector_contents(vecteur_A_Qi);
-			printf("Calcul lambda * Qi i:%d\n",i);
+printf("Calcul lambda * Qi i:%d\n",i);
 			gsl_vector_scale(vecteur_lambda_Q, gsl_vector_get(valeurs_propres, i));
 printf("print_vector_contents(vecteur_lambda_Q);\n");
 print_vector_contents(vecteur_lambda_Q);
@@ -148,16 +158,15 @@ print_vector_contents(vecteur_lambda_Q);
 			
 			if(epsilon_i > epsilon_max)
 			{
-				printf("AHAHAHAH : %lf\n", epsilon_i);
+printf("AHAHAHAH : %lf\n", epsilon_i);
 				epsilon_max = epsilon_i;
 			}
 		}
+		//Verification de la precision des calculs
 		if(epsilon_max < precision)
 		{
 			est_precis = 1;
 		}
-
-		iteration++;
 		//re-calcul de x
 		for(int i = 0; i < n; i++)
 		{
@@ -169,9 +178,27 @@ print_vector_contents(vecteur_lambda_Q);
 			}
 			gsl_vector_set(x,i, xi );
 		}
+		iteration++;
 print_vector_contents(x);
 printf("epsilon max : %f\n", epsilon_max);
 printf("est precis : %d\n", est_precis);
 printf("iteration : %d\n", iteration);
 	}
+
+	//Liberation de la memoire
+	gsl_vector_free(y_k);
+	gsl_vector_free(y_k_moins_un);
+	gsl_vector_free(valeurs_propres);
+	gsl_vector_free(vecteur_propre);
+	gsl_vector_free(vecteur_A_Qi);
+	gsl_vector_free(vecteur_lambda_Q);
+	gsl_vector_free(tmp_vector);
+
+	gsl_matrix_free(v_m);
+	gsl_matrix_free(q);
+	gsl_matrix_free(b_m);
+	gsl_matrix_free(b_m_moins_un);
+	gsl_matrix_free(f_m);
+	gsl_matrix_free(e_m);
+	
 }
