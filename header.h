@@ -8,4 +8,5 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define M_SIZE_FACTOR 100
+#define M_SIZE_CALCULUS 2 // ((1 + ceil(log10(n))))
+#define MATS_LOC "matrices" 

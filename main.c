@@ -11,19 +11,23 @@ int main(){
 
 	//Initialisation et lecture de la matrice A depuis un fichier
 	gsl_matrix *a;
-	a = remplir_matrice("test.mtx");
-	print_matrix_contents(a);
+	char * mat_name = "bcsstk03.mtx";
+	char mat_loc[50];
+	sprintf(mat_loc, "matrices/%s", mat_name);
+	a = remplir_matrice(mat_loc);
+	// print_matrix_contents(a);
 
 	//Initialisation des tailles n et m (espace de depart et sous espace)
 	int n = a->size1;
-	int m = ceil(n/M_SIZE_FACTOR);
+	int m = M_SIZE_CALCULUS;
 
 	if (m <= 1)
 		m = 2;
 
 	//Initialisation du vecteur x de taille n (1,0,0,...)
 	double X[n];
-	memset(X, 0.0, n);
+	for(int i = 1; i < n; i++)
+		X[i] = 0;
 	X[0] = 1;
 
 	//Lancement de l algorithme sur la matrice lue et le vecteur x

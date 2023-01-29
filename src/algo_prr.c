@@ -63,7 +63,7 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 	//vecteur temporaire pour le calcul de x
 	gsl_vector * tmp_vector = gsl_vector_alloc(m);
 
-	
+
 
 //// Etape 1 
 //1. Calculer C2k−1 = (yk, yk−1), C2k = (yk, yk) où yk = Ayk−1, for k = 1, m.
@@ -75,6 +75,8 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 		//Initialisation du vecteur y0 avec le vecteur x
 		normalize_vector(y_k_moins_un, x, n);
 
+//printf("//print_vector_contents(y_k_moins_un);\n");
+//print_vector_contents(y_k_moins_un);
 		//Calcul des produit scalaire du tableau c
 		c[0] = scalar_product(y_k_moins_un, y_k_moins_un);
 		for(int k = 1 ; k <= m ; k++)
@@ -105,8 +107,6 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 
-//printf("//print_matrix_contents(b_m_moins_un);\n");
-//print_matrix_contents(b_m_moins_un);
 		e_m = invert_a_matrix(b_m_moins_un, m);
 //printf("//print_matrix_contents(e_m);\n");
 //print_matrix_contents(e_m);
@@ -145,6 +145,7 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 //print_matrix_contents(q);
 	////Etape 4
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
+		// est_precis = 1;
 		epsilon_max = 0;
 		for (int i = 0; i < m ; i++ )
 		{
@@ -164,7 +165,7 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 			
 			if(epsilon_i > epsilon_max)
 			{
-//printf("AHAHAHAH : %lf\n", epsilon_i);
+				// est_precis = 0;
 				epsilon_max = epsilon_i;
 			}
 		}
@@ -185,10 +186,9 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 			x[i] = xi;
 		}
 		iteration++;
-//print_vector_contents(x);
-printf("epsilon max : %f\n", epsilon_max);
+//printf("epsilon max : %f\n", epsilon_max);
 //printf("est precis : %d\n", est_precis);
-printf("iteration : %d\n", iteration);
+//printf("iteration : %d\n", iteration);
 	}
 
 	//Liberation de la memoire

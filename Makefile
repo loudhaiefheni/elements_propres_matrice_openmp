@@ -1,7 +1,7 @@
 #gsl_include=-I/usr/include/
 #gsl_lib=-L/usr/lib/x86_64-linux-gnu/
 gsl_flags=-lgsl -lgslcblas -lm
-FLAGS=-Wall -fopenmp -g
+FLAGS=-Wall -fopenmp -g -DHAVE_INLINE
 cc=gcc
 
 programme: main.o algo.o load_matrix.o inverter.o input_andCo.o
@@ -38,7 +38,7 @@ test.o: test.c
 
 clean: 
 	rm *.o
-	rm programme
+	rm programme || rm test || rm calcul_perf
 
 
 

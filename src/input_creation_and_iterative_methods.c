@@ -85,21 +85,21 @@ double scalar_product(gsl_vector *vector1, gsl_vector *vector2)
  * @brief Fonction calculant le produit d'une matrice et d'un vecteur
  * 
  * @param matrix la matrice a multiplier
- * @param vector le vecteur a multipplier
+ * @param vector le vecteur a multiplier
  * @return gsl_vector * le vecteur resultat du produit
  */
 gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector)
 {
-	int row, colomn;
 	double result;
 	gsl_vector *vector_result = gsl_vector_alloc(matrix->size1);
 	
 	//Parallelisation de la premiere boucle qui parcourt les lignes de la matrice
-	// #pragma omp parallel for private(result)
-	for(row = 0; row <matrix->size1; row++)
+	#pragma omp parallel for private(result) schedule(static)
+	for(int row = 0; row < matrix->size1; row++)
 	{
+		// printf("%d : Thread %d\n", row, omp_get_thread_num());
 		result = 0;
-		for(colomn = 0; colomn < matrix->size2 ; colomn++)
+		for(int colomn = 0; colomn < matrix->size2 ; colomn++)
 		{
 			result += (double)gsl_matrix_get(matrix, row, colomn) * (double)gsl_vector_get(vector,colomn);
 		}

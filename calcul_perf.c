@@ -14,16 +14,18 @@ double PPR_lisse(int n_exec, gsl_matrix *A){
 	double t_moy = 0;
 	//Initialisation des tailles n et m (espace de depart et sous espace)
 	int n = A->size1;
-	int m = ceil(n/M_SIZE_FACTOR);
-
+	int m = M_SIZE_CALCULUS;
+	printf("M = %d\n", m);
+	if (m <= 1) m = 2;
 	double X[n];
 	//Initialisation du vecteur x de taille n (1,0,0,...)
 	// print_vector_contents(x);
 	for(int i = 0; i<n_exec; i++){
 		// Lancement de l algorithme sur la matrice lue et le vecteur x
-		memset(X, 0.0, n);
+		for(int i = 1; i < n; i++)
+			X[i] = 0;
 		X[0] = 1;
-		printf("Lissage %d\n", i + 1); 
+		printf("Lissage %d\n", i + 1);
 		t_start = omp_get_wtime(); 
 		algo_PRR(A, X, n, m);
 		t_end = omp_get_wtime();
@@ -44,7 +46,7 @@ int main(int argc, char * argv[]){
 	// Initialisation et lecture de la matrice A depuis un fichier
 	gsl_matrix *a;
 	a = remplir_matrice(argv[1]);
-	// print_vector_contents(a);
+	// print_matrix_contents(a);
 
 
 	for (int num_thread = 1; num_thread <= 16; num_thread *= 2) {
