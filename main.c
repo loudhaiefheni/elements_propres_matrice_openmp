@@ -16,19 +16,21 @@ int main(){
 
 	//Initialisation des tailles n et m (espace de depart et sous espace)
 	int n = a->size1;
-	int m = (int)(n/10);
+	int m = ceil(n/M_SIZE_FACTOR);
+
+	if (m <= 1)
+		m = 2;
 
 	//Initialisation du vecteur x de taille n (1,0,0,...)
-	gsl_vector *x = gsl_vector_alloc(n);
-	gsl_vector_set_zero(x); 
-	gsl_vector_set(x, 0, (double)1);
-	print_vector_contents(x);
+	double X[n];
+	memset(X, 0.0, n);
+	X[0] = 1;
 
 	//Lancement de l algorithme sur la matrice lue et le vecteur x
-	algo_PRR(a,x, n, m);
+	algo_PRR(a, X, n, m);
 
-    //Liberation de la memoire
-    gsl_matrix_free(a);
+	//Liberation de la memoire
+	gsl_matrix_free(a);
 
 	return 0;
 }

@@ -11,7 +11,7 @@
  * @param n taile de la matrice A
  * @param m taille du sous espace pour les calculs des valeurs et vecteurs propores
  */
-void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
+void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 {
 //// Initialisation des constantes, des vecteurs et des matrices
 
@@ -73,8 +73,7 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 	while(!est_precis && iteration < ITERATION_MAX)
 	{
 		//Initialisation du vecteur y0 avec le vecteur x
-		normalize_vector(x);
-		y_k_moins_un = x;
+		normalize_vector(y_k_moins_un, x, n);
 
 		//Calcul des produit scalaire du tableau c
 		c[0] = scalar_product(y_k_moins_un, y_k_moins_un);
@@ -97,25 +96,25 @@ void algo_PRR(gsl_matrix *A , gsl_vector *x, int n, int m)
 				gsl_matrix_set(b_m, ligne , colonne, c[colonne + ligne + 1]);
 			}
 		}
-printf("Bm\n");
-print_matrix_contents(b_m);
-printf("\nBm-1\n");
-print_matrix_contents(b_m_moins_un);
-printf("\nVm\n");
-print_matrix_contents(v_m);
+//printf("Bm\n");
+//print_matrix_contents(b_m);
+//printf("\nBm-1\n");
+//print_matrix_contents(b_m_moins_un);
+//printf("\nVm\n");
+//print_matrix_contents(v_m);
 	////Etape 2
 	//2. Calculer Em = B−1 m−1, Fm = Em * Bm
 
-printf("print_matrix_contents(b_m_moins_un);\n");
-print_matrix_contents(b_m_moins_un);
+//printf("//print_matrix_contents(b_m_moins_un);\n");
+//print_matrix_contents(b_m_moins_un);
 		e_m = invert_a_matrix(b_m_moins_un, m);
-printf("print_matrix_contents(e_m);\n");
-print_matrix_contents(e_m);
-printf("print_matrix_contents(b_m);\n");
-print_matrix_contents(b_m);
+//printf("//print_matrix_contents(e_m);\n");
+//print_matrix_contents(e_m);
+//printf("//print_matrix_contents(b_m);\n");
+//print_matrix_contents(b_m);
 		gsl_blas_dsymm(CblasLeft, CblasUpper, 1, e_m, b_m, 0, f_m);
-printf("print_matrix_contents(f_m);\n");
-print_matrix_contents(f_m);
+//printf("//print_matrix_contents(f_m);\n");
+//print_matrix_contents(f_m);
 		// Calcul valeurs et vecteurs propres de f_m
 		gsl_eigen_nonsymmv_workspace *my_workspace;
 		my_workspace = gsl_eigen_nonsymmv_alloc(m);
@@ -129,43 +128,43 @@ print_matrix_contents(f_m);
 	////Etape 3
 	//3. Calculer qi = Vm × ui pour i = 1, . . . m
 		
-printf("/////// ETAPE 3 ///////////\n");
-printf("print_vector_contents(valeurs_propres);\n");
-print_vector_contents(valeurs_propres);
+//printf("/////// ETAPE 3 ///////////\n");
+//printf("//print_vector_contents(valeurs_propres);\n");
+//print_vector_contents(valeurs_propres);
 
 		for(int i = 0; i < m; i++)
 		{
 			gsl_matrix_complex_get_col(vecteur_propre_complex, vecteurs_propres_complexes, i);
 			*vecteur_propre = gsl_vector_complex_real(vecteur_propre_complex).vector;
-printf("print_matrix_contents(vecteur_propre[i]);\n ::: %d de 0 à %d ", i, m);
-print_vector_contents(vecteur_propre);
+//printf("//print_matrix_contents(vecteur_propre[i]);\n ::: %d de 0 à %d ", i, m);
+//print_vector_contents(vecteur_propre);
 			gsl_matrix_set_col(q, i, matrix_vector_product(v_m, vecteur_propre));
 		}
 
-printf("print_matrix_contents(q);\n");
-print_matrix_contents(q);
+//printf("//print_matrix_contents(q);\n");
+//print_matrix_contents(q);
 	////Etape 4
 	//4. Si maxi=1,m k(Aqi − λiqi)k ε, alors avec un nouveau vecteur x aller `a l’´etape 1.
 		epsilon_max = 0;
 		for (int i = 0; i < m ; i++ )
 		{
 			gsl_matrix_get_col(vecteur_lambda_Q, q, i);
-printf("print_vector_contents(vecteur_Q);\n");
-print_vector_contents(vecteur_lambda_Q);
+//printf("//print_vector_contents(vecteur_Q);\n");
+//print_vector_contents(vecteur_lambda_Q);
 			vecteur_A_Qi = matrix_vector_product(A, vecteur_lambda_Q);
-printf("print_vector_contents(vecteur_A_Qi);\n");
-print_vector_contents(vecteur_A_Qi);
-printf("Calcul lambda(i) * Qi i:%d\n",i);
-printf("lambda(i) :%f\n", gsl_vector_get(valeurs_propres, i));
+//printf("//print_vector_contents(vecteur_A_Qi);\n");
+//print_vector_contents(vecteur_A_Qi);
+//printf("Calcul lambda(i) * Qi i:%d\n",i);
+//printf("lambda(i) :%f\n", gsl_vector_get(valeurs_propres, i));
 			gsl_vector_scale(vecteur_lambda_Q, gsl_vector_get(valeurs_propres, i));
-printf("print_vector_contents(vecteur_lambda_Q);\n");
-print_vector_contents(vecteur_lambda_Q);
+//printf("//print_vector_contents(vecteur_lambda_Q);\n");
+//print_vector_contents(vecteur_lambda_Q);
 			gsl_vector_sub(vecteur_A_Qi, vecteur_lambda_Q);
-			epsilon_i = get_norm(vecteur_A_Qi); 
+			epsilon_i = get_norm_gsl(vecteur_A_Qi); 
 			
 			if(epsilon_i > epsilon_max)
 			{
-printf("AHAHAHAH : %lf\n", epsilon_i);
+//printf("AHAHAHAH : %lf\n", epsilon_i);
 				epsilon_max = epsilon_i;
 			}
 		}
@@ -183,12 +182,12 @@ printf("AHAHAHAH : %lf\n", epsilon_i);
 			{
 				xi += gsl_vector_get(tmp_vector, j);
 			}
-			gsl_vector_set(x,i, xi );
+			x[i] = xi;
 		}
 		iteration++;
-print_vector_contents(x);
+//print_vector_contents(x);
 printf("epsilon max : %f\n", epsilon_max);
-printf("est precis : %d\n", est_precis);
+//printf("est precis : %d\n", est_precis);
 printf("iteration : %d\n", iteration);
 	}
 

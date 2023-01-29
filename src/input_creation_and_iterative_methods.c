@@ -6,7 +6,7 @@
  * @param vector Le vecteur dont on souhiate connaitre la norme
  * @return double La norme du vectur
  */
-double get_norm(gsl_vector *vector)
+double get_norm_gsl(gsl_vector *vector)
 {
 	// calcul de la norme
 	double xi;
@@ -23,27 +23,46 @@ double get_norm(gsl_vector *vector)
 	return norm;
 }
 /**
+ * @brief Fonction calculant la norme d un vecteur
+ * 
+ * @param vector Le vecteur dont on souhaite connaitre la norme
+ * @param size la taille du vecteur
+ * @return double La norme du vectur
+ */
+double get_norm(double *vector, size_t size)
+{
+	// calcul de la norme
+	double xi;
+	double sum = 0;
+	//Parallelisation de la boucle 
+	#pragma omp parallel for reduction(+ : sum)
+	for (int i = 0; i < size; i++)
+	{
+//printf("Task dist %d WITH VALUE %d \n", omp_get_thread_num(), i);
+		xi = vector[i];
+		sum += xi*xi;
+	}
+	double norm = sqrt(sum);
+	return norm;
+}
+/**
  * @brief Fonction qui permet de normaliser un vecteur
  * 
+ * @param vector_normalized Le nouveau vecteur ainsi créé
+ * @param vector Le vecteur dont on souhaite connaitre la norme
  * @param vector_to_normalize le vecteur a normaliser
- * @return int retourne 0 si tout c'est passe correctement
  */
-int normalize_vector(gsl_vector *vector_to_normalize)
+void normalize_vector(gsl_vector *vector_normalized, double *vector_to_normalize, size_t size)
 {
-	double xi;
-	double norm = get_norm(vector_to_normalize);
+	double norm = get_norm(vector_to_normalize, size);
 
 	//Parallelisation de la boucle 
-	#pragma omp parallel for private(xi)
-	for (int i = 0; i < vector_to_normalize->size; i++)
+	#pragma omp parallel for
+	for (int i = 0; i < size; i++)
 	{
 // printf("Task dist %d WITH VALUE %d \n", omp_get_thread_num(), i);
-		xi = gsl_vector_get(vector_to_normalize, i);
-		xi = xi / norm;
-		gsl_vector_set(vector_to_normalize, i, xi);
+		gsl_vector_set(vector_normalized, i, vector_to_normalize[i] / norm);
 	}
-
-	return 0;
 }
 /**
  * @brief Fonction calculant le produit scalaire de deux vecteurs

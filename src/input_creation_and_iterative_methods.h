@@ -5,8 +5,10 @@
 #include <math.h>
 #include <assert.h>
 
-double get_norm(gsl_vector *vector);
-int normalize_vector(gsl_vector *vector_to_normalize);
+
+double get_norm_gsl(gsl_vector *vector);
+double get_norm(double *, size_t);
+void normalize_vector(gsl_vector *, double *, size_t);
 double scalar_product(gsl_vector *vector1, gsl_vector *vector2);
 gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector);
 void print_vector_contents(gsl_vector *vector);

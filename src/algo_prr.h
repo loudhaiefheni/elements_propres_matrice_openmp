@@ -9,4 +9,4 @@
 
 #define ITERATION_MAX 150
 
-void algo_PRR(gsl_matrix *a , gsl_vector *x, int n, int m);
+void algo_PRR(gsl_matrix *a , double *x, int n, int m);
