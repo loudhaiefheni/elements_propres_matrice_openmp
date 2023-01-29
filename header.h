@@ -6,3 +6,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define M_SIZE_FACTOR 100

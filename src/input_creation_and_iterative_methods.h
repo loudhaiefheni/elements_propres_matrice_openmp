@@ -6,11 +6,17 @@
 #include <assert.h>
 
 
-// Calculer la norme d'un vecteur donné
-double get_norm(gsl_vector *vector);
 
-// Normaliser un vecteur donné
-int normalize_vector(gsl_vector *vector_to_normalize);
+
+
+// Calculer la norme d'un gsl_vector donné
+double get_norm_gsl(gsl_vector *vector);
+
+// Calculer la norme d'un vecteur donné (double *)
+double get_norm(double *, size_t);
+
+// Normaliser un vecteur donné (double *) resultat stocké dans gsl_vector
+void normalize_vector(gsl_vector *, double *, size_t);
 
 // Calculer le produit scalaire de deux vecteurs donnés
 double scalar_product(gsl_vector *vector1, gsl_vector *vector2);
